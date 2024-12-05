@@ -1,0 +1,39 @@
+name: Build Python Wheel
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+
+      - name: Build wheel
+        run: |
+          python setup.py sdist bdist_wheel
+
+      - name: List build artifacts
+        run: dir dist
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheel-files
+          path: dist/*.whl
