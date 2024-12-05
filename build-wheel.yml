@@ -1,0 +1,42 @@
+name: Build Wheel
+
+on:
+  push:
+    branches:
+      - main  # Change la branche selon tes besoins
+  pull_request:
+    branches:
+      - main  # Change la branche selon tes besoins
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    # Étape 1 : Vérifier le dépôt
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+
+    # Étape 2 : Installer Python
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'  # Spécifie la version de Python que tu souhaites utiliser
+
+    # Étape 3 : Installer les dépendances de ton projet
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel  # Installe setuptools et wheel pour la construction du package
+        pip install -r requirements.txt  # Installe les dépendances de ton projet si nécessaire
+
+    # Étape 4 : Construire le package wheel
+    - name: Build the wheel
+      run: python setup.py bdist_wheel
+
+    # Étape 5 : Télécharger le fichier .whl
+    - name: Upload Wheel Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-package
+        path: dist/*.whl  # Spécifie le chemin de ton fichier .whl généré
